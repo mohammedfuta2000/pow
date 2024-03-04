@@ -1,12 +1,15 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -144,8 +147,14 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 	return true
 }
 
-func calculateHash() string {
+func calculateHash(block Block) string {
+	record:= strconv.Itoa(block.Index)+block.TimeStamp+ strconv.Itoa(block.Data)+block.PrevHash+block.Nonce
+	h := sha256.New()
 
+	h.Write([]byte(record))
+	hashed:= h.Sum(nil)
+	// why this ↓
+	return hex.EncodeToString(hashed)
 }
 
 func generateBlock(oldBlock Block, Data int) Block {
@@ -172,7 +181,6 @@ func generateBlock(oldBlock Block, Data int) Block {
 			break
 		}
 	}
-	// what about the nonce??
 	return newBlock
 }
 
