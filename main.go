@@ -105,6 +105,16 @@ func handleWriteBlock(w http.ResponseWriter,r *http.Request) {
 	}
 	defer r.Body.Close()
 
+	// why is this mutex necessary
+	mutex.Lock()
+	newBlock:= generateBlock(Blockchain[len(Blockchain)-1],m.Data)
+	mutex.Unlock()
+
+	if isBlockValid(newBlock,Blockchain[len(Blockchain)-1]){
+		Blockchain = append(Blockchain, newBlock)
+		spew.Dump(Blockchain)
+	}
+
 
 }
 
@@ -128,7 +138,7 @@ func calculateHash() string {
 
 }
 
-func generateBlock() Block {
+func generateBlock(oldBlock Block, Data int) Block {
 
 }
 
