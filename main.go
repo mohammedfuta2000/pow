@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -33,7 +34,7 @@ type Block struct {
 var Blockchain []Block
 
 type Message struct{
-	Data int
+	Data int `json:"data"`
 
 }
 var mutex = &sync.Mutex{}
@@ -102,11 +103,13 @@ func handleGetBlockchain(w http.ResponseWriter,r *http.Request) {
 func handleWriteBlock(w http.ResponseWriter,r *http.Request) {
 	w.Header().Set("Content-Type","application/json")
 	var m Message
+	
 
 	if err:= json.NewDecoder(r.Body).Decode(&m);err!=nil{
 		respondWithJSON(w,r,http.StatusBadRequest, r.Body)
 		return
 	}
+	fmt.Println("xxxxxxxxxxxxx",m)
 	defer r.Body.Close()
 
 	// why is this mutex necessary
@@ -184,6 +187,10 @@ func generateBlock(oldBlock Block, Data int) Block {
 	return newBlock
 }
 
-func isHashValid() bool {
-
+func isHashValid(hash string, difficlty int) bool {
+	// what is this
+	prefix:= strings.Repeat("0",difficlty)
+	// 0,2= 00
+	// 0,1= 0
+	return strings.HasPrefix(hash, prefix)
 }
