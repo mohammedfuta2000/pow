@@ -108,8 +108,16 @@ func handleWriteBlock(w http.ResponseWriter,r *http.Request) {
 
 }
 
-func respondWithJSON() {
-
+func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
+	w.Header().Set("Content-Type","application/json")
+	response, err:= json.MarshalIndent(payload,""," ")
+	if err!=nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("HTTP 500: Internal server error"))
+		return
+	}
+	w.WriteHeader(code)
+	w.Write(response)
 }
 
 func isBlockValid() bool {
