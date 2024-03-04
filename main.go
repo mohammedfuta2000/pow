@@ -28,6 +28,10 @@ type Block struct {
 
 var Blockchain []Block
 
+type Message struct{
+	Data int
+
+}
 var mutex = &sync.Mutex{}
 
 func main() {
@@ -82,6 +86,7 @@ func makeMuxRouter() http.Handler {
 }
 
 func handleGetBlockchain(w http.ResponseWriter,r *http.Request) {
+	// bytes, err:= json.Marshal(Blockchain)
 	bytes, err:= json.MarshalIndent(Blockchain,""," ")
 	if err!=nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -90,7 +95,16 @@ func handleGetBlockchain(w http.ResponseWriter,r *http.Request) {
 	io.WriteString(w, string(bytes))
 }
 
-func handleWriteBlock() {
+func handleWriteBlock(w http.ResponseWriter,r *http.Request) {
+	w.Header().Set("Content-Type","application/json")
+	var m Message
+
+	if err:= json.NewDecoder(r.Body).Decode(&m);err!=nil{
+		respondWithJSON(w,r,http.StatusBadRequest, r.Body)
+		return
+	}
+	defer r.Body.Close()
+
 
 }
 
