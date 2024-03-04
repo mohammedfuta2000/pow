@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -148,7 +149,31 @@ func calculateHash() string {
 }
 
 func generateBlock(oldBlock Block, Data int) Block {
+	var newBlock Block
+	t:= time.Now()
 
+	newBlock.Index= oldBlock.Index+1
+	newBlock.TimeStamp = t.String()
+	newBlock.Data = Data
+	newBlock.PrevHash = oldBlock.Hash
+	newBlock.Difficulty = difficulty
+
+	for i := 0; ; i++ {
+		hex := fmt.Sprintf("/%x",i)
+		newBlock.Nonce = hex
+
+		if !isHashValid(calculateHash(newBlock), newBlock.Difficulty){
+			fmt.Println(calculateHash(newBlock), "do more work")
+			time.Sleep(time.Second)
+			continue
+		}else{
+			fmt.Println(calculateHash(newBlock),"Work done!")
+			newBlock.Hash = calculateHash(newBlock)
+			break
+		}
+	}
+	// what about the nonce??
+	return newBlock
 }
 
 func isHashValid() bool {
