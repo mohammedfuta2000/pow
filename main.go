@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -79,8 +81,13 @@ func makeMuxRouter() http.Handler {
 	return muxRouter
 }
 
-func handleGetBlockchain() {
-
+func handleGetBlockchain(w http.ResponseWriter,r *http.Request) {
+	bytes, err:= json.MarshalIndent(Blockchain,""," ")
+	if err!=nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	io.WriteString(w, string(bytes))
 }
 
 func handleWriteBlock() {
