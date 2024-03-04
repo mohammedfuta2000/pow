@@ -130,8 +130,17 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 	w.Write(response)
 }
 
-func isBlockValid() bool {
-
+func isBlockValid(newBlock, oldBlock Block) bool {
+	if oldBlock.Index+1!=newBlock.Index{
+		return false
+	}
+	if oldBlock.hash != newBlock.PrevHash{
+		return false
+	}
+	if calculateHash(newBlock)!=newBlock.Hash{
+		return false
+	}
+	return true
 }
 
 func calculateHash() string {
